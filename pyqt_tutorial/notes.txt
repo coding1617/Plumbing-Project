@@ -1,0 +1,3 @@
+These PyQt tutorial files go through some tutorial projects,
+and can also be used as references when working on both the
+Plumbing Project and our real Capturing Coral Tentacles application.

@@ -17,7 +17,7 @@ class Window(QMainWindow):
         super().__init__(parent=None)
         self.setWindowTitle("QMainWindow")
         self.setCentralWidget(QLabel("I'm the Central Widget"))
-        self._createMenu() # Syntax for creating a function
+        self._createMenu() # Syntax for create functions (underscore should be included)
         self._createToolBar()
         self._createStatusBar()
     

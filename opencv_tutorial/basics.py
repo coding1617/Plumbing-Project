@@ -1,6 +1,6 @@
 import cv2 as cv
 
-img = cv.imread('photos/cat.jpg')
+img = cv.imread('photos/CScoral_fragment.png')
 cv.imshow('cat', img)
 
 # Converting image to grayscale

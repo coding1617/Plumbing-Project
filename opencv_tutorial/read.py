@@ -1,5 +1,7 @@
 import cv2 as cv
 
+#playing around with images 
+
 img = cv.imread('photos/cat.jpg')
 
 cv.imshow('Cat', img)

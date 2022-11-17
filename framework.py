@@ -11,7 +11,6 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Main")
-        self.setFixedSize(500, 500)
         self.generalLayout = QGridLayout()
 
         centralWidget = QWidget(self)
@@ -19,10 +18,30 @@ class Window(QMainWindow):
         self.setCentralWidget(centralWidget)
 
         self._createPhoto()
+        self._createButtonsAndLabels()
 
     def _createPhoto(self):
         self.photo = Template()
         self.generalLayout.addWidget(self.photo, 0, 0)
+
+    def _createButtonsAndLabels(self):
+        self.countButton = QPushButton("Count")
+        self.countButton.setFixedSize(100, 30)
+        self.countLabel = QLabel("Circle Count:")
+        self.countDisplay = QLineEdit("(Number)")
+        self.countDisplay.setFixedSize(400, 30)
+        self.addMarkerButton = QPushButton("Add marker")
+        self.removeMarkerButton = QPushButton("Remove marker")
+
+        self.smallGridLayout = QGridLayout()
+        self.smallGridLayout.addWidget(self.countButton, 0, 1)
+        self.smallGridLayout.addWidget(self.countLabel, 1, 0)
+        self.smallGridLayout.addWidget(self.countDisplay, 1, 1)
+        self.smallGridLayout.addWidget(self.addMarkerButton, 2, 1)
+        self.smallGridLayout.addWidget(self.removeMarkerButton, 3, 1)
+
+        self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
+
 
 class PhotoLabel(QLabel):
 

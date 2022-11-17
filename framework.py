@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+import cv2 as cv
+import numpy as np
+
 count = 0
 class Window(QMainWindow):
     
@@ -13,7 +16,6 @@ class Window(QMainWindow):
         super().__init__()
         self.setWindowTitle("Main")
         self.generalLayout = QGridLayout()
-        
 
         centralWidget = QWidget(self)
         centralWidget.setLayout(self.generalLayout)
@@ -33,6 +35,36 @@ class Window(QMainWindow):
     def clickme(self):
         print("pressed")
 
+    def count(self):
+        # Load image, grayscale, Otsu's threshold
+        image = cv.imread('photos/unnamed.png')
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
+
+        # Filter out large non-connecting objects
+        cnts = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+        for c in cnts:
+            area = cv.contourArea(c)
+            if area < 500:
+                cv.drawContours(thresh,[c],0,0,-1)
+
+        # Morph open using elliptical shaped kernel
+        kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3,3))
+        opening = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=3)
+
+        # Find circles 
+        cnts = cv.findContours(opening, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+        for c in cnts:
+            area = cv.contourArea(c)
+            if area > 10 and area < 10:
+                ((x, y), r) = cv.minEnclosingCircle(c)
+                cv.circle(image, (int(x), int(y)), int(r), (36, 255, 12), 2)
+
+        self.countDisplay.setText(str(len(cnts)))
+        cv.waitKey()
+
     def _createButtonsAndLabels(self, count):
         self.countButton = QPushButton("Count")
         self.countButton.setFixedSize(100, 30)
@@ -42,7 +74,8 @@ class Window(QMainWindow):
         self.addMarkerButton = QPushButton("Add marker")
         self.removeMarkerButton = QPushButton("Remove marker")
 
-        self.addMarkerButton.clicked.connect(self.clickme)
+        self.countButton.clicked.connect(self.count)
+        # self.addMarkerButton.clicked.connect(self._createMarker)
         
         self.smallGridLayout = QGridLayout()
         self.smallGridLayout.addWidget(self.countButton, 0, 1)

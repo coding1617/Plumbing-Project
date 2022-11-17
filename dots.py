@@ -1,8 +1,9 @@
 import cv2 as cv
 import numpy as np
 
+
 # Load image, grayscale, Otsu's threshold
-image = cv.imread('photos/newDots.png')
+image = cv.imread('photos/unnamed.png')
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 

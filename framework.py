@@ -32,12 +32,30 @@ class Window(QMainWindow):
         self.moveObject = MovingObject(50, 50, 40)
         self.generalLayout.addWidget(self.moveObject)
 
-    def clickme(self):
-        print("pressed")
+    def _createButtonsAndLabels(self, count):
+        self.countButton = QPushButton("Count")
+        self.countButton.setFixedSize(100, 30)
+        self.countLabel = QLabel("Circle Count:")
+        self.countDisplay = QLineEdit("{0}".format(count))
+        self.countDisplay.setFixedSize(400, 30)
+        self.addMarkerButton = QPushButton("Add marker")
+        self.removeMarkerButton = QPushButton("Remove marker")
 
-    def count(self):
+        self.countButton.clicked.connect(lambda: self.countDots("photos/unnamed.png"))
+        # self.addMarkerButton.clicked.connect(self._createMarker)
+        
+        self.smallGridLayout = QGridLayout()
+        self.smallGridLayout.addWidget(self.countButton, 0, 1)
+        self.smallGridLayout.addWidget(self.countLabel, 1, 0)
+        self.smallGridLayout.addWidget(self.countDisplay, 1, 1)
+        self.smallGridLayout.addWidget(self.addMarkerButton, 2, 1)
+        self.smallGridLayout.addWidget(self.removeMarkerButton, 3, 1)
+
+        self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
+
+    def countDots(self, filename):
         # Load image, grayscale, Otsu's threshold
-        image = cv.imread('photos/unnamed.png')
+        image = cv.imread(filename)
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
@@ -64,28 +82,6 @@ class Window(QMainWindow):
 
         self.countDisplay.setText(str(len(cnts)))
         cv.waitKey()
-
-    def _createButtonsAndLabels(self, count):
-        self.countButton = QPushButton("Count")
-        self.countButton.setFixedSize(100, 30)
-        self.countLabel = QLabel("Circle Count:")
-        self.countDisplay = QLineEdit("{0}".format(count))
-        self.countDisplay.setFixedSize(400, 30)
-        self.addMarkerButton = QPushButton("Add marker")
-        self.removeMarkerButton = QPushButton("Remove marker")
-
-        self.countButton.clicked.connect(self.count)
-        # self.addMarkerButton.clicked.connect(self._createMarker)
-        
-        self.smallGridLayout = QGridLayout()
-        self.smallGridLayout.addWidget(self.countButton, 0, 1)
-        self.smallGridLayout.addWidget(self.countLabel, 1, 0)
-        self.smallGridLayout.addWidget(self.countDisplay, 1, 1)
-        self.smallGridLayout.addWidget(self.addMarkerButton, 2, 1)
-        self.smallGridLayout.addWidget(self.removeMarkerButton, 3, 1)
-
-        self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
-
 
 class MovingObject(QGraphicsEllipseItem):
     def __init__(self, x, y, r):

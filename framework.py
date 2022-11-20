@@ -1,5 +1,7 @@
 # Source for image upload PyQt code:
 # https://stackoverflow.com/questions/60614561/how-to-ask-user-to-input-an-image-in-pyqt5
+# Source for counting dots
+# #https://stackoverflow.com/questions/60603243/detect-small-dots-in-image 
 
 import sys
 from PyQt5.QtWidgets import *
@@ -10,6 +12,7 @@ import cv2 as cv
 import numpy as np
 
 count = 0
+#path = ""
 class Window(QMainWindow):
     
     def __init__(self):
@@ -28,46 +31,40 @@ class Window(QMainWindow):
         self.photo = Template()
         self.generalLayout.addWidget(self.photo, 0, 0)
         
-    def _createMarker(self):
-        self.moveObject = MovingObject(50, 50, 40)
-        self.generalLayout.addWidget(self.moveObject)
-
     def clickme(self):
         print("pressed")
 
     def count(self):
         # Load image, grayscale, Otsu's threshold
         image = cv.imread('photos/unnamed.png')
-        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
+        grayScale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        threshold = cv.threshold(grayScale, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
         # Filter out large non-connecting objects
-        cnts = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-        for c in cnts:
-            area = cv.contourArea(c)
-            if area < 500:
-                cv.drawContours(thresh,[c],0,0,-1)
+        count = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        count = count[0] if len(count) == 2 else count[1]
+        for c in count:
+            if cv.contourArea(c) < 500:
+                cv.drawContours(threshold,[c],0,0,-1)
 
         # Morph open using elliptical shaped kernel
         kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3,3))
-        opening = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=3)
+        opening = cv.morphologyEx(threshold, cv.MORPH_OPEN, kernel, iterations=3)
 
         # Find circles 
-        cnts = cv.findContours(opening, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-        for c in cnts:
-            area = cv.contourArea(c)
-            if area > 10 and area < 10:
+        count = cv.findContours(opening, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        count = count[0] if len(count) == 2 else count[1]
+        for c in count:
+            if cv.contourArea(c) > 10 and cv.contourArea(c) < 10:
                 ((x, y), r) = cv.minEnclosingCircle(c)
                 cv.circle(image, (int(x), int(y)), int(r), (36, 255, 12), 2)
 
-        self.countDisplay.setText(str(len(cnts)))
-        cv.waitKey()
+        self.countDisplay.setText(str(len(count)))
 
     def _createButtonsAndLabels(self, count):
         self.countButton = QPushButton("Count")
         self.countButton.setFixedSize(100, 30)
+        self.countButton.setCheckable(True)
         self.countLabel = QLabel("Circle Count:")
         self.countDisplay = QLineEdit("{0}".format(count))
         self.countDisplay.setFixedSize(400, 30)
@@ -75,7 +72,6 @@ class Window(QMainWindow):
         self.removeMarkerButton = QPushButton("Remove marker")
 
         self.countButton.clicked.connect(self.count)
-        # self.addMarkerButton.clicked.connect(self._createMarker)
         
         self.smallGridLayout = QGridLayout()
         self.smallGridLayout.addWidget(self.countButton, 0, 1)
@@ -86,38 +82,6 @@ class Window(QMainWindow):
 
         self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
 
-
-class MovingObject(QGraphicsEllipseItem):
-    def __init__(self, x, y, r):
-        super().__init__(0, 0, r, r)
-        self.setPos(x, y)
-        self.setBrush(Qt.blue)
-        self.setAcceptHoverEvents(True)
-
-    # mouse hover event
-    def hoverEnterEvent(self, event):
-        app.instance().setOverrideCursor(Qt.OpenHandCursor)
-
-    def hoverLeaveEvent(self, event):
-        app.instance().restoreOverrideCursor()
-
-    # mouse click event
-    def mousePressEvent(self, event):
-        pass
-
-    def mouseMoveEvent(self, event):
-        orig_cursor_position = event.lastScenePos()
-        updated_cursor_position = event.scenePos()
-
-        orig_position = self.scenePos()
-
-        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
-
-    def mouseReleaseEvent(self, event):
-        print('x: {0}, y: {1}'.format(self.pos().x(), self.pos().y()))
-        
 class PhotoLabel(QLabel):
 
     def __init__(self, *args, **kwargs):
@@ -139,6 +103,7 @@ class Template(QWidget):
         self.photo = PhotoLabel()
         btn = QPushButton('Browse')
         btn.clicked.connect(self.open_image)
+        path = self.open_image
         grid = QGridLayout(self)
         grid.addWidget(btn, 0, 0, Qt.AlignHCenter)
         grid.addWidget(self.photo, 1, 0)
@@ -150,7 +115,10 @@ class Template(QWidget):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Photo', QDir.currentPath(), 'Images (*.png *.jpg)')
             if not filename:
                 return
-        self.photo.setPixmap(QPixmap(filename))
+            path = filename
+            print("Trying: {}".format(path))
+            self.photo.setPixmap(QPixmap(filename))
+        
 
 
 if __name__ == '__main__':

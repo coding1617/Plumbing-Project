@@ -1,3 +1,5 @@
+#https://stackoverflow.com/questions/60603243/detect-small-dots-in-image 
+
 import cv2 as cv
 import numpy as np
 

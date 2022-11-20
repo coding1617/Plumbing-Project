@@ -1,8 +1,8 @@
 import numpy as np
 import argparse
 import cv2
-import matplotlib.pyplot as plt
-import imutils
+#import mathplotlib.pyplot as plt
+#import imutils
 
 # construct parse, parse arguments
 ap = argparse.ArgumentParser()
@@ -33,6 +33,8 @@ for (lower, upper) in boundaries:
 gray_pic = cv2.cvtColor(eroded, cv2.COLOR_BGR2GRAY)
 gray_count = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
-cv2.imshow("images", np.hstack([gray_pic, gray_count]))
+#cv2.imshow("images", np.hstack([gray_pic, gray_count]))
+
+cv2.imshow("images", gray_count)
 
 cv2.waitKey(0)

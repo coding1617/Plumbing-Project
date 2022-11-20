@@ -34,7 +34,9 @@ class Window(QMainWindow):
     def clickme(self):
         print("pressed")
 
-    def count(self):
+        self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
+
+    def countDots(self, filename):
         # Load image, grayscale, Otsu's threshold
         image = cv.imread('photos/unnamed.png')
         grayScale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)

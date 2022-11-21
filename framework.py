@@ -74,7 +74,7 @@ class Window(QMainWindow):
         count = cv.findContours(opening, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         count = count[0] if len(count) == 2 else count[1]
         for c in count:
-            if cv.contourArea(c) > 10 and cv.contourArea(c) < 10:
+            if cv.contourArea(c) > 10 and cv.contourArea(c) < 500:
                 ((x, y), r) = cv.minEnclosingCircle(c)
                 cv.circle(image, (int(x), int(y)), int(r), (36, 255, 12), 2)
 

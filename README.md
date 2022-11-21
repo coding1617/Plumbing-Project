@@ -1,4 +1,5 @@
 # Plumbing-Project
+# Aditi Dam, Geena Kye, Aparna Pillai
 
 To see the project, run `python framework.py` in the terminal. 
 Any of the pictures in the photos folder will work.

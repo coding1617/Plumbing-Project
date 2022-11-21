@@ -11,8 +11,9 @@ from PyQt5.QtGui import *
 import cv2 as cv
 import numpy as np
 
-count = 0
-#path = ""
+COUNT = 0
+PATH = ""
+
 class Window(QMainWindow):
     
     def __init__(self):
@@ -25,20 +26,36 @@ class Window(QMainWindow):
         self.setCentralWidget(centralWidget)
 
         self._createPhoto()
-        self._createButtonsAndLabels(count)
+        self._createButtonsAndLabels(COUNT)
 
     def _createPhoto(self):
         self.photo = Template()
         self.generalLayout.addWidget(self.photo, 0, 0)
+
+    def _createButtonsAndLabels(self, count):
+        self.countButton = QPushButton("Count")
+        self.countButton.setFixedSize(100, 30)
+        self.countButton.setCheckable(True)
+        self.countLabel = QLabel("Circle Count:")
+        self.countDisplay = QLineEdit("{0}".format(count))
+        self.countDisplay.setFixedSize(400, 30)
+        self.addMarkerButton = QPushButton("Add marker")
+        self.removeMarkerButton = QPushButton("Remove marker")
+
+        self.countButton.clicked.connect(lambda: self.countDots(PATH))
         
-    def clickme(self):
-        print("pressed")
+        self.smallGridLayout = QGridLayout()
+        self.smallGridLayout.addWidget(self.countButton, 0, 1)
+        self.smallGridLayout.addWidget(self.countLabel, 1, 0)
+        self.smallGridLayout.addWidget(self.countDisplay, 1, 1)
+        self.smallGridLayout.addWidget(self.addMarkerButton, 2, 1)
+        self.smallGridLayout.addWidget(self.removeMarkerButton, 3, 1)
 
         self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
 
     def countDots(self, filename):
         # Load image, grayscale, Otsu's threshold
-        image = cv.imread('photos/unnamed.png')
+        image = cv.imread(filename)
         grayScale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         threshold = cv.threshold(grayScale, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
@@ -63,27 +80,6 @@ class Window(QMainWindow):
 
         self.countDisplay.setText(str(len(count)))
 
-    def _createButtonsAndLabels(self, count):
-        self.countButton = QPushButton("Count")
-        self.countButton.setFixedSize(100, 30)
-        self.countButton.setCheckable(True)
-        self.countLabel = QLabel("Circle Count:")
-        self.countDisplay = QLineEdit("{0}".format(count))
-        self.countDisplay.setFixedSize(400, 30)
-        self.addMarkerButton = QPushButton("Add marker")
-        self.removeMarkerButton = QPushButton("Remove marker")
-
-        self.countButton.clicked.connect(self.count)
-        
-        self.smallGridLayout = QGridLayout()
-        self.smallGridLayout.addWidget(self.countButton, 0, 1)
-        self.smallGridLayout.addWidget(self.countLabel, 1, 0)
-        self.smallGridLayout.addWidget(self.countDisplay, 1, 1)
-        self.smallGridLayout.addWidget(self.addMarkerButton, 2, 1)
-        self.smallGridLayout.addWidget(self.removeMarkerButton, 3, 1)
-
-        self.generalLayout.addLayout(self.smallGridLayout, 0, 1)
-
 class PhotoLabel(QLabel):
 
     def __init__(self, *args, **kwargs):
@@ -103,9 +99,10 @@ class Template(QWidget):
     def __init__(self):
         super().__init__()
         self.photo = PhotoLabel()
+        self.path = ""
         btn = QPushButton('Browse')
         btn.clicked.connect(self.open_image)
-        path = self.open_image
+        
         grid = QGridLayout(self)
         grid.addWidget(btn, 0, 0, Qt.AlignHCenter)
         grid.addWidget(self.photo, 1, 0)
@@ -117,11 +114,13 @@ class Template(QWidget):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Photo', QDir.currentPath(), 'Images (*.png *.jpg)')
             if not filename:
                 return
-            path = filename
-            print("Trying: {}".format(path))
+            photo_path = str(filename)
+            # print("Checking if string: {}".format(isinstance(path, str)))
+            
             self.photo.setPixmap(QPixmap(filename))
         
-
+        global PATH
+        PATH = str(photo_path)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

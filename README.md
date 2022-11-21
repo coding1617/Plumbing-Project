@@ -14,6 +14,4 @@ PyQt - We are using this to create a GUI for users to interact with the applicat
 
 NumPy - We are using this for implementing arrays and counting logic. NumPy uses a lot less memory in comparison to lists. 
 
-Imutils - We have used this to rotate and resize images for basic image processing. We are not sure if this will be a part of the final application. 
-
 **Following our client's requests and needs, we are not using a database or an authentication layer. This may change depending on our client. 

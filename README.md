@@ -1,10 +1,7 @@
 # Plumbing-Project
 
 To see the project, run `python framework.py` in the terminal. 
-The following photos can be run successfully in this Plumbing Project:
-- photos/unnamed.png
-- photos/dots.jpg
-- photos/test.jpg
+Any of the pictures in the photos folder will work.
 
 Python - We are using Python as our primary programming language because it is a simple and straightforward language. 
 

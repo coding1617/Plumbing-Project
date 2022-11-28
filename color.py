@@ -9,7 +9,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", help = "path to image")
 args = vars(ap.parse_args())
 
-image = cv2.imread('photos/coral.png')
+image = cv2.imread('coralPhotos/coral.png')
 resized = cv2.resize(image, (750,550), interpolation=cv2.INTER_CUBIC)
 
 blurred = cv2.GaussianBlur(resized, (11, 11), 0)
